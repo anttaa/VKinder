@@ -1,16 +1,16 @@
 import configparser
-from user_handler import UserHandler
+from handler.user_handler import UserHandler
 from base import Database
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     ini = configparser.ConfigParser()
-    ini.read('settings.ini')
+    ini.read("settings.ini")
 
-    base = Database('database')
-    uh = UserHandler(base,
-                     ini.getint('vk', 'group_id'),
-                     ini.get('vk', 'version'),
-                     ini.get('tokens', 'vk_group'),
-                     ini.get('tokens', 'vk_personal'))
-    uh.reg_long_poll_server()
+    base = Database("database")
+    uh = UserHandler(
+        base,
+        ini.getint("vk", "group_id"),
+        ini.get("vk", "version"),
+        ini.get("tokens", "vk_group"),
+        ini.get("tokens", "vk_personal"),
+    )
