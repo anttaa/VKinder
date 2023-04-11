@@ -5,7 +5,7 @@ def calculate_age(bdate):
     bdate = datetime.strptime(bdate, "%d.%m.%Y")
     today = date.today()
     age = (
-            today.year - bdate.year - ((today.month, today.day) < (bdate.month, bdate.day))
+        today.year - bdate.year - ((today.month, today.day) < (bdate.month, bdate.day))
     )
     return age
 
@@ -38,9 +38,7 @@ def profile_check(profile):
     err = ""
     try:
         if profile.token == -1:
-            err += (
-                " - Для использования поиска необходимо зарегистрироваться<br>"
-            )
+            err += " - Для использования поиска необходимо зарегистрироваться<br>"
 
         if profile.age == -1:
             err += (

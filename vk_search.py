@@ -33,7 +33,7 @@ class VkSearch:
 
     def next(self):
         client = None
-        if self.__params['access_token'] == -1:
+        if self.__params["access_token"] == -1:
             return client
         while True:
             try:
@@ -41,9 +41,14 @@ class VkSearch:
                 if result["is_closed"]:
                     continue
                 try:
-                    client = VkUser(self.__db_session, result["id"], self.__params['access_token'])
+                    client = VkUser(
+                        self.__db_session, result["id"], self.__params["access_token"]
+                    )
                     client.photo_update()
-                    if self.__db_session.candidates_check(self.__profile, client) is not None:
+                    if (
+                        self.__db_session.candidates_check(self.__profile, client)
+                        is not None
+                    ):
                         continue
                 except Exception as e:
                     print("next -> while -> VkUser", e)

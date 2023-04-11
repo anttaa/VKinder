@@ -12,13 +12,13 @@ class VkUser:
         self.__params = {"access_token": token, "v": version}
         self.__id = -1
         self.__vk_id = vk_id
-        self.__first_name = ''
-        self.__last_name = ''
+        self.__first_name = ""
+        self.__last_name = ""
         self.__age = -1
         self.__sex = -1
         self.__city = -1
         self.__offset = 0
-        self.__photos = ''
+        self.__photos = ""
 
         self.__load()
 
@@ -107,11 +107,13 @@ class VkUser:
 
     def __load(self):
         try:
-            profile = self.__db_session.profile_load(self.__vk_id)  # Проверяем наличие в базе
+            profile = self.__db_session.profile_load(
+                self.__vk_id
+            )  # Проверяем наличие в базе
             if profile is None:
                 params = {
                     "user_ids": self.__vk_id,
-                    "fields": "bdate,city,sex,deactivated,home_town"
+                    "fields": "bdate,city,sex,deactivated,home_town",
                 }
                 res = requests.get(
                     f"{self.url}/users.get", params={**self.__params, **params}
@@ -119,21 +121,21 @@ class VkUser:
                 if "error" in res:
                     return None
                 profile = profile_vk_check(res["response"][0])
-                profile['id'] = -1
-                profile['token'] = -1
-                profile['offset'] = 0
-                profile['photos'] = ''
-            self.__id = profile['id']
-            self.__first_name = profile['first_name']
-            self.__last_name = profile['last_name']
-            self.__age = profile['age']
-            self.__sex = profile['sex']
-            self.__city = profile['city']
-            self.__photos = profile['photos']
-            self.__token = profile['token']
-            self.__offset = profile['offset']
+                profile["id"] = -1
+                profile["token"] = -1
+                profile["offset"] = 0
+                profile["photos"] = ""
+            self.__id = profile["id"]
+            self.__first_name = profile["first_name"]
+            self.__last_name = profile["last_name"]
+            self.__age = profile["age"]
+            self.__sex = profile["sex"]
+            self.__city = profile["city"]
+            self.__photos = profile["photos"]
+            self.__token = profile["token"]
+            self.__offset = profile["offset"]
         except Exception as e:
-            print('vk_profile -> __load', e)
+            print("vk_profile -> __load", e)
             return None
 
     def save(self):
@@ -149,6 +151,10 @@ class VkUser:
         for photo in res["response"]["items"]:
             if photo["id"] not in lres:
                 lres[photo["likes"]["count"]] = photo["id"]
-        self.__photos = ','.join(
-            [f"photo{self.__vk_id}_{lres[photo_id]}" for photo_id in sorted(lres, reverse=True)[:3]])
+        self.__photos = ",".join(
+            [
+                f"photo{self.__vk_id}_{lres[photo_id]}"
+                for photo_id in sorted(lres, reverse=True)[:3]
+            ]
+        )
         self.save()

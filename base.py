@@ -11,7 +11,7 @@ class Database:
 
     def __connect__(self):
         if self.__conn is None:
-            self.__conn = sqlite3.connect(self.__dbname, isolation_level='IMMEDIATE')
+            self.__conn = sqlite3.connect(self.__dbname, isolation_level="IMMEDIATE")
             self.__conn.isolation_level = None
             self.__cursor = self.__conn.cursor()
 
@@ -109,7 +109,9 @@ class Database:
             print("profile_load", e)
         return data
 
-    def candidates_save(self, profile, client, flag=2):  # flag: 1 (favorite) или 2 (Nope)
+    def candidates_save(
+        self, profile, client, flag=2
+    ):  # flag: 1 (favorite) или 2 (Nope)
         try:
             self.__cursor.execute(
                 """insert into relationship(vkid_profile, vkid_candidate, flag) values(?,?,?)""",
@@ -127,24 +129,31 @@ class Database:
     def candidates_check(self, profile, client):
         res = None
         try:
-            self.__cursor.execute("""select * from relationship where vkid_profile=? and vkid_candidate=?""",
-                                  (profile.vk_id, client.vk_id))
+            self.__cursor.execute(
+                """select * from relationship where vkid_profile=? and vkid_candidate=?""",
+                (profile.vk_id, client.vk_id),
+            )
             res = self.__cursor.fetchone()
         except Exception as e:
             print("profile_load", e)
-        return res['flag'] if res is not None else None
+        return res["flag"] if res is not None else None
 
     def favorite_load(self, profile, offset, limit=10):  # Возвращает список анкет
         data = []
         try:
             self.__cursor.execute(
                 """select vk_id,first_name,last_name,photos from relationship as r left join profiles as p on (r.vkid_candidate=p.vk_id) where vkid_profile=? and flag=1 LIMIT ? OFFSET ?""",
-                (profile.vk_id, int(limit), int(offset)))
+                (profile.vk_id, int(limit), int(offset)),
+            )
             for rec in self.__cursor.fetchall():
-                data.append({'vk_id': rec[0],
-                             'first_name': rec[1],
-                             'last_name': rec[2],
-                             'photos': rec[3]})
+                data.append(
+                    {
+                        "vk_id": rec[0],
+                        "first_name": rec[1],
+                        "last_name": rec[2],
+                        "photos": rec[3],
+                    }
+                )
         except Exception as e:
             print("favorite_load", e)
         return data
@@ -152,7 +161,9 @@ class Database:
     def token_load(self, profile):
         res = None
         try:
-            self.__cursor.execute("""select token from profiles where id=?""", (profile.id,))
+            self.__cursor.execute(
+                """select token from profiles where id=?""", (profile.id,)
+            )
             res = self.__cursor.fetchone()
 
             if res is not None:
@@ -163,5 +174,6 @@ class Database:
         return res if res is not None else -1
 
     def token_save(self, vk_id, token):
-        self.__cursor.execute("update profiles set token=? where vk_id=?",
-                              (token, vk_id))
+        self.__cursor.execute(
+            "update profiles set token=? where vk_id=?", (token, vk_id)
+        )

@@ -12,12 +12,12 @@ class UserHandler:
     url = "https://api.vk.com/method"
 
     def __init__(
-            self,
-            db_session,
-            group_id: int,
-            version: str,
-            token_group: str,
-            token_search: str,
+        self,
+        db_session,
+        group_id: int,
+        version: str,
+        token_group: str,
+        token_search: str,
     ):
         self.__db_session = db_session
         self.__session = {}
@@ -30,7 +30,8 @@ class UserHandler:
         try:
             params = {"group_id": group_id}
             return requests.get(
-                f"{self.url}/groups.getLongPollServer", params={**self.__params, **params}
+                f"{self.url}/groups.getLongPollServer",
+                params={**self.__params, **params},
             ).json()
         except Exception as e:
             return None
@@ -70,13 +71,13 @@ class UserHandler:
             print(f"Ошибка: {str(e)} serv_param={serv_param}")
 
     def __send_message(
-            self,
-            user_id: int,
-            message: dict  # {'text': '', 'attachment': '', 'btn_in_mes': True\False, 'buttons':[]}
-            # message: str,
-            # attachment: str = None,
-            # buttons: list = None,
-            # btn_in_mes: bool = False,
+        self,
+        user_id: int,
+        message: dict  # {'text': '', 'attachment': '', 'btn_in_mes': True\False, 'buttons':[]}
+        # message: str,
+        # attachment: str = None,
+        # buttons: list = None,
+        # btn_in_mes: bool = False,
     ):
         # https://dev.vk.com/method/messages.send
         try:
@@ -111,24 +112,28 @@ class UserHandler:
                 self.__session[message["from_id"]] = {"profile": None, "handler": None}
             session = self.__session[message["from_id"]]
             if session["profile"] is None:  # Загружаем профиль
-                session["profile"] = VkUser(self.__db_session,
-                                            message["from_id"],
-                                            self.__params['access_token'])
+                session["profile"] = VkUser(
+                    self.__db_session, message["from_id"], self.__params["access_token"]
+                )
                 session["profile"].save()
-                session['client'] = None
-                session['favorite_offset'] = 0
+                session["client"] = None
+                session["favorite_offset"] = 0
                 # self.__load_profile(message["from_id"])
             answer = False
             check = profile_check(session["profile"])
             cmd = self.default_cmd
-            command = 'default_cmd'
+            command = "default_cmd"
             if "payload" in message:  # Нажата кнопка
                 command = json.loads(message["payload"])["command"]
-            if len(check) > 0 and session["handler"] is None and command.find('setting') == -1:
+            if (
+                len(check) > 0
+                and session["handler"] is None
+                and command.find("setting") == -1
+            ):
                 answer = self.__menu_settings()
-                answer['text'] = f"{check} {answer['text']}"
+                answer["text"] = f"{check} {answer['text']}"
             else:
-                if session["handler"] is not None and command.find('cancel') == -1:
+                if session["handler"] is not None and command.find("cancel") == -1:
                     cmd = session["handler"]
                 elif command in dir(self):
                     cmd = getattr(self, command)
@@ -151,13 +156,12 @@ class UserHandler:
             "buttons": [
                 [
                     ["В избранное", '{"command":"to_favorite"}', "primary"],
-                    ["Следующий", '{"command":"next"}', "primary"]
+                    ["Следующий", '{"command":"next"}', "primary"],
                 ],
                 [["Избранные", '{"command":"favorites"}', "primary"]],
                 [["Настройки", '{"command":"settings"}', "primary"]],
-            ]
+            ],
         }
-
 
     def __menu_settings(self):
         return {
@@ -166,12 +170,12 @@ class UserHandler:
                 [
                     ["Возраст", '{"command":"setting_age"}', "primary"],
                     ["Город", '{"command":"setting_city"}', "primary"],
-                    ["Пол", '{"command":"setting_sex"}', "primary"]
+                    ["Пол", '{"command":"setting_sex"}', "primary"],
                 ],
                 [["Обновить из профиля", '{"command":"setting_update"}', "primary"]],
                 [["Регистрация", "https://178.57.222.71:8080/", None, "open_link"]],
-                [["<- Назад", '{"command":"default_cmd"}', "primary"]]
-            ]
+                [["<- Назад", '{"command":"default_cmd"}', "primary"]],
+            ],
         }
 
     def __menu_favorites(self):
@@ -179,11 +183,19 @@ class UserHandler:
             "text": "Избранные",
             "buttons": [
                 [
-                    ["Предыдущая страница", '{"command":"favorites_prev_page"}', "primary"],
-                    ["Следующая страница", '{"command":"favorites_next_page"}', "primary"]
+                    [
+                        "Предыдущая страница",
+                        '{"command":"favorites_prev_page"}',
+                        "primary",
+                    ],
+                    [
+                        "Следующая страница",
+                        '{"command":"favorites_next_page"}',
+                        "primary",
+                    ],
                 ],
-                [["<- Назад", '{"command":"default_cmd"}', "primary"]]
-            ]
+                [["<- Назад", '{"command":"default_cmd"}', "primary"]],
+            ],
         }
 
     def default_cmd(self, session, text):
@@ -195,67 +207,76 @@ class UserHandler:
         return self.__menu_settings()
 
     def setting_cancel(self, session, text):
-        session['handler'] = None
+        session["handler"] = None
         return self.__menu_main()
 
     def setting_get_token(self, session, text):
         session["handler"] = None
         return {
-            "text": "Укажите возраст:" if session['profile'].age != -1 else f"Ваш возраст {session['profile'].age}. Укажите новый:",
-            "buttons": [[["Отмена", '{"command":"settings_cancel"}', "primary"]]]
+            "text": "Укажите возраст:"
+            if session["profile"].age != -1
+            else f"Ваш возраст {session['profile'].age}. Укажите новый:",
+            "buttons": [[["Отмена", '{"command":"settings_cancel"}', "primary"]]],
         }
 
     def setting_age(self, session, text):
         session["handler"] = self.setting_age_save
         return {
-            "text": "Укажите возраст:" if session['profile'].age != -1 else f"Ваш возраст {session['profile'].age}. Укажите новый:",
-            "buttons": [[["Отмена", '{"command":"settings_cancel"}', "primary"]]]
+            "text": "Укажите возраст:"
+            if session["profile"].age != -1
+            else f"Ваш возраст {session['profile'].age}. Укажите новый:",
+            "buttons": [[["Отмена", '{"command":"settings_cancel"}', "primary"]]],
         }
 
     def setting_age_save(self, session, text):
         session["handler"] = None
-        session['profile'].age = int(text)
-        session['profile'].save()
+        session["profile"].age = int(text)
+        session["profile"].save()
         mes = self.__menu_settings()
-        mes['text'] = f"Возраст сохранен {mes['text']}"
+        mes["text"] = f"Возраст сохранен {mes['text']}"
         return mes
 
     def setting_city(self, session, text):
         session["handler"] = self.setting_city_save
         return {
-            "text": "Укажите город:" if session['profile'].age != -1 else f"Ваш город {session['profile'].age}. Укажите новый:",
-            "buttons": [[["Отмена", '{"command":"settings_cancel"}', "primary"]]]
+            "text": "Укажите город:"
+            if session["profile"].age != -1
+            else f"Ваш город {session['profile'].age}. Укажите новый:",
+            "buttons": [[["Отмена", '{"command":"settings_cancel"}', "primary"]]],
         }
 
     def setting_city_save(self, session, text):
         session["handler"] = None
-        session['profile'].city = int(text)
-        session['profile'].save()
+        session["profile"].city = int(text)
+        session["profile"].save()
         mes = self.__menu_settings()
-        mes['text'] = f"Город сохранен {mes['text']}"
+        mes["text"] = f"Город сохранен {mes['text']}"
         return mes
 
     def setting_sex(self, session, text):
         session["handler"] = self.setting_sex
-        return {"text": "Укажите пол:", "buttons": [
-            [
-                ["Мужской", '{"command":"setting_sex_save_male"}', "primary"],
-                ["Женский", '{"command":"setting_sex_save_female"}', "primary"]
+        return {
+            "text": "Укажите пол:",
+            "buttons": [
+                [
+                    ["Мужской", '{"command":"setting_sex_save_male"}', "primary"],
+                    ["Женский", '{"command":"setting_sex_save_female"}', "primary"],
+                ],
+                [["Отмена", '{"command":"settings_cancel"}', "primary"]],
             ],
-            [["Отмена", '{"command":"settings_cancel"}', "primary"]]
-        ]}
+        }
 
     def setting_sex_save_male(self, session, text):
         # self.__session[peer_id]["handler"] = None
         session["handler"] = self.setting_sex
-        session['profile'].sex = 1
+        session["profile"].sex = 1
         # return {"text": "Действие: Добавили в избранное"}
         return self.__menu_settings()
 
     def setting_sex_save_female(self, session, text):
         # self.__session[peer_id]["handler"] = None
         session["handler"] = self.setting_sex
-        session['profile'].sex = 2
+        session["profile"].sex = 2
         # return {"text": "Действие: Добавили в избранное"}
         return self.__menu_settings()
 
@@ -266,14 +287,16 @@ class UserHandler:
 
     def next(self, session, text):
         try:
-            if session['client'] is not None:
-                self.__db_session.candidates_save(session['profile'], session['client'])
+            if session["client"] is not None:
+                self.__db_session.candidates_save(session["profile"], session["client"])
 
-            session['client'] = VkSearch(session['profile'], self.__db_session).next()
-            return {'text': f'{session["client"].last_name} {session["client"].first_name}\n https://vk.com/id{session["client"].vk_id}',
-                    'attachment': session["client"].photos}
+            session["client"] = VkSearch(session["profile"], self.__db_session).next()
+            return {
+                "text": f'{session["client"].last_name} {session["client"].first_name}\n https://vk.com/id{session["client"].vk_id}',
+                "attachment": session["client"].photos,
+            }
         except Exception as e:
-            print('next', e)
+            print("next", e)
 
     def to_favorite(self, session, text):
         if session["client"] is not None:
@@ -283,27 +306,39 @@ class UserHandler:
 
     def favorites(self, session, text):
         session["handler"] = None
-        session['favorite_offset'] = 0
+        session["favorite_offset"] = 0
         # self.favorites_next_page(session, text)
         return self.__menu_favorites()
 
     def favorites_prev_page(self, session, text):
         data = []
-        if session['favorite_offset']-10 < 0:
-            session['favorite_offset'] = 0
-        res = self.__db_session.favorite_load(session['profile'], session['favorite_offset'])
+        if session["favorite_offset"] - 10 < 0:
+            session["favorite_offset"] = 0
+        res = self.__db_session.favorite_load(
+            session["profile"], session["favorite_offset"]
+        )
         # self.__menu_favorites()
         for rec in res:
-            data.append({'text': f'{rec["last_name"]} {rec["first_name"]}\n https://vk.com/id{rec["vk_id"]}',
-                         'attachment': rec["photos"]})
+            data.append(
+                {
+                    "text": f'{rec["last_name"]} {rec["first_name"]}\n https://vk.com/id{rec["vk_id"]}',
+                    "attachment": rec["photos"],
+                }
+            )
         return data
 
     def favorites_next_page(self, session, text):
         data = []
-        res = self.__db_session.favorite_load(session['profile'], session['favorite_offset'])
+        res = self.__db_session.favorite_load(
+            session["profile"], session["favorite_offset"]
+        )
         for rec in res:
-            data.append({'text': f'{rec["last_name"]} {rec["first_name"]}\n https://vk.com/id{rec["vk_id"]}',
-                         'attachment': rec["photos"]})
+            data.append(
+                {
+                    "text": f'{rec["last_name"]} {rec["first_name"]}\n https://vk.com/id{rec["vk_id"]}',
+                    "attachment": rec["photos"],
+                }
+            )
         # self.__menu_favorites()
-        session['favorite_offset'] += 10
+        session["favorite_offset"] += 10
         return data
