@@ -5,7 +5,7 @@
 ### Установка
 
 1. Убедитесь, что компьютер настроен для работы с БД PostgreSQL. Ссылка для установки: [Postgre](https://www.postgresql.org/).
-1. Для копирования файлов проекта Вам потребуется аккаунт на GitHub. Ссылка: [GiHhub](https://github.com/).
+1. Для копирования файлов проекта Вам потребуется аккаунт на GitHub. Ссылка: [GiThub](https://github.com/).
 1. Создайте группу в ВКонтакте, от имени которой будет общаться бот. Инструкцию можно посмотреть [здесь](group_settings.md).
 1. Получите токен для группы ВКонтакте, выполнив [инструкцию](https://docs.google.com/document/d/1_xt16CMeaEir-tWLbUFyleZl6woEdJt-7eyva1coT3w/edit?usp=sharing).
 1. Сохраните токен группы в переменной vk_group в файле settings.ini.
