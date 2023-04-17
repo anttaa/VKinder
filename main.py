@@ -12,5 +12,5 @@ if __name__ == "__main__":
         ini.getint("vk", "group_id"),
         ini.get("vk", "version"),
         ini.get("tokens", "vk_group"),
-        ini.get("tokens", "vk_personal"),
+        ini.get("tokens", "vk_service")
     )

@@ -13,49 +13,45 @@ def calculate_age(bdate):
 def profile_vk_check(vk_profile):
     if "bdate" in vk_profile:
         if len(vk_profile["bdate"].split(".")) < 3:
-            vk_profile["age"] = -1
+            vk_profile["age"] = None
         else:
             vk_profile["age"] = calculate_age(vk_profile["bdate"])
         del vk_profile["bdate"]
     else:
-        vk_profile["age"] = -1
+        vk_profile["age"] = None
 
     if "sex" in vk_profile:
         if vk_profile["sex"] == 0:
-            vk_profile["sex"] = -1
+            vk_profile["sex"] = None
     else:
-        vk_profile["sex"] = -1
+        vk_profile["sex"] = None
 
     if "city" in vk_profile:
         vk_profile["city"] = vk_profile["city"]["id"]
     else:
-        vk_profile["city"] = -1
+        vk_profile["city"] = None
 
     return vk_profile
 
 
 def profile_check(profile):
     err = ""
-    try:
-        if profile.token == -1:
-            err += " - Для использования поиска необходимо зарегистрироваться<br>"
+    if profile.token is None:
+        err += " - Для использования поиска необходимо зарегистрироваться<br>"
 
-        if profile.age == -1:
-            err += (
-                " - Не удается определить Ваш возраст, так как скрыта дата рождения<br>"
-            )
-
-        if profile.sex == -1:
-            err += " - Не удается определить Ваш пол<br>"
-
-        if profile.city == -1:
-            err += " - У Вас не указан город<br>"
-
-        return (
-            f"Есть ошибки: <br> {err} <br>Необходимо указать недостающие данные"
-            if len(err) > 0
-            else ""
+    if profile.age is None:
+        err += (
+            " - Не удается определить Ваш возраст, так как скрыта дата рождения<br>"
         )
-    except Exception as e:
-        print("check_profile", e)
-        return err
+
+    if profile.sex is None:
+        err += " - Не удается определить Ваш пол<br>"
+
+    if profile.city is None:
+        err += " - У Вас не указан город<br>"
+
+    return (
+        f"Есть ошибки: <br> {err} <br>Необходимо указать недостающие данные"
+        if len(err) > 0
+        else ""
+    )
