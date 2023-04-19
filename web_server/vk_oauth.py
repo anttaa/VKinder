@@ -7,8 +7,10 @@ import ssl
 GROUP_ID = ""
 CLIENT_ID = ""
 CLIENT_SECRET = ""
+PORT = 8080
+SERVER = f"178.57.222.71:{PORT}"
 SCOPES = "offline,photos"
-REDIRECT_URI = "https://178.57.222.71:8080/social_login/vk/callback"
+REDIRECT_URI = f"https://{SERVER}/social_login/vk/callback"
 REDIRECT_GROUP = f"https://vk.com/im?sel={GROUP_ID}"
 DIALOG_URI = f"https://oauth.vk.com/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope={SCOPES},v=5.93"
 TOKEN_URI = "https://oauth.vk.com/access_token?client_id={client_id}&client_secret={client_secret}&redirect_uri={redirect_uri}&code={code}"
@@ -42,4 +44,4 @@ app.add_routes(
 
 ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 ssl_context.load_cert_chain("certificate.crt", "private.key")
-web.run_app(app, ssl_context=ssl_context, port=8080)
+web.run_app(app, ssl_context=ssl_context, port=PORT)

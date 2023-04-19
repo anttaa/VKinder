@@ -314,8 +314,8 @@ class UserHandler:
 
     def setting_sex(self, session, text):
         session["handler"] = None
-        return {
-            "text": "Укажите пол:",
+        mes = {
+            "text": "Укажите пол",
             "buttons": [
                 [
                     ["Мужской", '{"command":"setting_sex_save_male"}', "primary"],
@@ -324,6 +324,13 @@ class UserHandler:
                 [["Отмена", '{"command":"settings_cancel"}', "primary"]],
             ],
         }
+        if session["profile"].sex == 1:
+            mes["text"] += " (текущий пол: мужской)"
+        elif session["profile"].sex == 2:
+            mes["text"] += " (текущий пол: женский)"
+        else:
+            mes["text"] += " (текущий пол: неопределен)"
+        return mes
 
     def setting_sex_save_male(self, session, text):
         session["handler"] = None
