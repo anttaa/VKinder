@@ -4,11 +4,11 @@ from aiohttp import web, ClientSession
 from DB.conn_db import Database
 import ssl
 
-GROUP_ID = ""
-CLIENT_ID = ""
-CLIENT_SECRET = ""
+GROUP_ID = ""  # id сообщества в котором работает бот
+CLIENT_ID = ""  # id приложения
+CLIENT_SECRET = ""  # Секретный ключ приложения
 PORT = 8080
-SERVER = f"178.57.222.71:{PORT}"
+SERVER = f"#Адрес сервера#:{PORT}"
 SCOPES = "offline,photos"
 REDIRECT_URI = f"https://{SERVER}/social_login/vk/callback"
 REDIRECT_GROUP = f"https://vk.com/im?sel={GROUP_ID}"
