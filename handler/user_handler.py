@@ -325,23 +325,23 @@ class UserHandler:
             ],
         }
         if session["profile"].sex == 1:
-            mes["text"] += " (текущий пол: мужской)"
-        elif session["profile"].sex == 2:
             mes["text"] += " (текущий пол: женский)"
+        elif session["profile"].sex == 2:
+            mes["text"] += " (текущий пол: мужской)"
         else:
             mes["text"] += " (текущий пол: неопределен)"
         return mes
 
     def setting_sex_save_male(self, session, text):
         session["handler"] = None
-        session["profile"].sex = 1
+        session["profile"].sex = 2
         mes = self.menu_settings()
         mes["text"] = f"Пол сохранен {mes['text']}"
         return mes
 
     def setting_sex_save_female(self, session, text):
         session["handler"] = None
-        session["profile"].sex = 2
+        session["profile"].sex = 1
         mes = self.menu_settings()
         mes["text"] = f"Пол сохранен {mes['text']}"
         return mes
