@@ -34,7 +34,7 @@ async def handler_callback(request):
             base = Database()
             base.token_save(response_data["user_id"], response_data["access_token"])
 
-    return web.HTTPFound(REDIRECT_GROUP)  # web.json_response(response_data)
+    return web.HTTPFound(REDIRECT_GROUP)
 
 
 app = web.Application()
