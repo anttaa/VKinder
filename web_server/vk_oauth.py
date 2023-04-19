@@ -1,12 +1,15 @@
 import json
 
 from aiohttp import web, ClientSession
-import sqlite3
+from DB.conn_db import Database
 import ssl
 
+GROUP_ID = ""
+CLIENT_ID = ""
+CLIENT_SECRET = ""
 SCOPES = "offline,photos"
 REDIRECT_URI = "https://178.57.222.71:8080/social_login/vk/callback"
-REDIRECT_GROUP = "https://vk.com/im?sel=-219663170"
+REDIRECT_GROUP = f"https://vk.com/im?sel={GROUP_ID}"
 DIALOG_URI = f"https://oauth.vk.com/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope={SCOPES},v=5.93"
 TOKEN_URI = "https://oauth.vk.com/access_token?client_id={client_id}&client_secret={client_secret}&redirect_uri={redirect_uri}&code={code}"
 
@@ -26,16 +29,8 @@ async def handler_callback(request):
     async with ClientSession() as session:
         async with session.post(uri) as response:
             response_data = await response.json()
-            conn = sqlite3.connect("/root/vk_bot/database")
-            cursor = conn.cursor()
-            cursor.execute("PRAGMA journal_mode=wal")
-            cursor.execute(
-                "update profiles set token=? where vk_id=?",
-                (response_data["access_token"], response_data["user_id"]),
-            )
-            conn.commit()
-            cursor.close()
-            conn.close()
+            base = Database()
+            base.token_save(response_data["user_id"], response_data["access_token"])
 
     return web.HTTPFound(REDIRECT_GROUP)  # web.json_response(response_data)
 

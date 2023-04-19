@@ -142,8 +142,8 @@ class Database:
         )
         return res.token if res is not None else None
 
-    def token_save(self, profile, token):
+    def token_save(self, vk_id, token):
         session.query(Settings.token).filter(
-            Settings.vkid_profile == profile.vk_id
+            Settings.vkid_profile == vk_id
         ).first().token = token
         session.commit()
