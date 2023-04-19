@@ -1,5 +1,3 @@
-import json
-
 from aiohttp import web, ClientSession
 from DB.conn_db import Database
 import ssl
