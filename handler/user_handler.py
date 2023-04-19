@@ -1,24 +1,25 @@
-import requests
-import random
 import json
+import random
 import re
 
+import requests
+
 from handler.keyboard import make_keyboard
-from vk_search import VkSearch
 from handler.tools import profile_check
 from vk_profile import VkUser
+from vk_search import VkSearch
 
 
 class UserHandler:
     url = "https://api.vk.com/method"
 
     def __init__(
-        self,
-        db_session,
-        group_id: int,
-        version: str,
-        token_group: str,
-        token_service: str
+            self,
+            db_session,
+            group_id: int,
+            version: str,
+            token_group: str,
+            token_service: str
     ):
         self.db_session = db_session
         self.session = {}
@@ -60,9 +61,9 @@ class UserHandler:
                         self.parse_message(update["object"]["message"])
 
     def send_message(
-        self,
-        user_id: int,
-        message: dict  # {'text': '', 'attachment': '', 'btn_in_mes': True\False, 'buttons':[]}
+            self,
+            user_id: int,
+            message: dict  # {'text': '', 'attachment': '', 'btn_in_mes': True\False, 'buttons':[]}
     ):
         # https://dev.vk.com/method/messages.send
         params = {
@@ -117,9 +118,9 @@ class UserHandler:
             if 'params' in message["payload"]:
                 session['params'] = {**session['params'], **json.loads(message["payload"])["params"]}
         if (
-            len(check) > 0
-            and session["handler"] is None
-            and command.find("setting") == -1
+                len(check) > 0
+                and session["handler"] is None
+                and command.find("setting") == -1
         ):
             answer = self.menu_settings()
             answer["text"] = f"{check} {answer['text']}"
@@ -245,7 +246,8 @@ class UserHandler:
                     "text": f"Сохранить {result['title']} ?",
                     "buttons": [
                         [
-                            ["Да", f'{{"command":"setting_city_save", "params":{{"city": {result["id"]} }}}}', "primary"],
+                            ["Да", f'{{"command":"setting_city_save", "params":{{"city": {result["id"]} }}}}',
+                             "primary"],
                             ["Нет", '{"command":"settings_cancel"}', "primary"],
                         ],
                         [["Отмена", '{"command":"settings_cancel"}', "primary"]],
@@ -361,7 +363,6 @@ class UserHandler:
     def favorites(self, session, text):
         session["handler"] = None
         session["favorite_offset"] = 0
-        # self.favorites_next_page(session, text)
         return self.menu_favorites()
 
     def favorite_records(self, session):
@@ -375,7 +376,8 @@ class UserHandler:
                     "text": f'{rec["last_name"]} {rec["first_name"]}\n https://vk.com/id{rec["vk_id"]}',
                     "attachment": rec["photos"],
                     "btn_in_mes": True,
-                    "buttons": [[["Убрать из избранного", f'{{"command":"from_favorite", "params":{{"vk_id":{rec["vk_id"]} }}}}', "primary"]]],
+                    "buttons": [[["Убрать из избранного",
+                                  f'{{"command":"from_favorite", "params":{{"vk_id":{rec["vk_id"]} }}}}', "primary"]]],
                 }
             )
         return data

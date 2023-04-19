@@ -1,16 +1,17 @@
-import requests
-from handler.tools import profile_vk_check
 from time import sleep
+
+import requests
+
+from handler.tools import profile_vk_check
 
 
 class VkUser:
     url = "https://api.vk.com/method"
 
     def __init__(self, db_session, vk_id, token, version="5.131"):
-        self.token = token
+        self._token = token
         self.db_session = db_session
         self.params = {"access_token": token, "v": version}
-        self.id = -1
         self.vk_id = vk_id
         self.first_name = ""
         self.last_name = ""
@@ -19,11 +20,15 @@ class VkUser:
         self.city = None
         self.offset = 0
         self.photos = ""
-        self.dt_update = None
 
         self.load()
-        self.token = self.db_session.token_load(self)
         self.offset = self.db_session.offset_load(self)
+
+    @property
+    def token(self):
+        if self._token is None:
+            self._token = self.db_session.token_load(self)
+        return self._token
 
     def get_offset(self):
         self.offset += 1
@@ -48,15 +53,13 @@ class VkUser:
             profile["id"] = None
             profile["photos"] = ""
             profile["dt_update"] = None
-        self.id = profile["id"]
-        self.token = None
+        self._token = None
         self.first_name = profile["first_name"]
         self.last_name = profile["last_name"]
         self.age = profile["age"]
         self.sex = profile["sex"]
         self.city = profile["city"]
         self.photos = profile["photos"]
-        self.dt_update = profile["dt_update"]
 
     def save(self):
         self.db_session.profile_save(self)  # Сохраняем профиль полученный из ВК

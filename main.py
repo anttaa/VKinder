@@ -1,12 +1,13 @@
 import configparser
+
+from DB.conn_db import Database
 from handler.user_handler import UserHandler
-from base import Database
 
 if __name__ == "__main__":
     ini = configparser.ConfigParser()
     ini.read("settings.ini")
 
-    base = Database("database")
+    base = Database()
     uh = UserHandler(
         base,
         ini.getint("vk", "group_id"),

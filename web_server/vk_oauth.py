@@ -4,8 +4,6 @@ from aiohttp import web, ClientSession
 import sqlite3
 import ssl
 
-CLIENT_ID = ""
-CLIENT_SECRET = ""
 SCOPES = "offline,photos"
 REDIRECT_URI = "https://178.57.222.71:8080/social_login/vk/callback"
 REDIRECT_GROUP = "https://vk.com/im?sel=-219663170"
